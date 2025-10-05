@@ -51,6 +51,24 @@ export interface SellingPoint {
   updated_at: string;
 }
 
+export interface WhyVisit {
+  id: number;
+  title: string;
+  title_id: string;
+  description: string;
+  description_id: string;
+  icon_url: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface WhyVisitContent {
+  why_visit_section_title: string;
+  why_visit_section_title_id: string;
+  why_visit_section_description: string;
+  why_visit_section_description_id: string;
+}
+
 export interface Attraction {
   id: string;
   title: string;
@@ -71,13 +89,27 @@ export interface Pricing {
   id: number;
   type: string;
   title: string;
+  title_id: string;
   subtitle: string;
+  subtitle_id: string;
   adult_price: number;
   infant_price: number;
   currency: string;
   description: string;
+  image_url?: string;
+  thumbnail_url?: string;
+  color?: string;
+  start_gradient_color?: string;
+  end_gradient_color?: string;
   created_at: string;
   updated_at: string;
+}
+
+export interface GeneralPricingContent {
+  general_pricing_section_title: string;
+  general_pricing_section_title_id: string;
+  general_pricing_section_description: string;
+  general_pricing_section_description_id: string;
 }
 
 export interface Profile {

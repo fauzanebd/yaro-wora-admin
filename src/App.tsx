@@ -9,6 +9,7 @@ import DashboardHome from "./pages/DashboardHome";
 // Main Page
 import CarouselPage from "./pages/main/CarouselPage";
 import SellingPointsPage from "./pages/main/SellingPointsPage";
+import WhyVisitPage from "./pages/main/WhyVisitPage";
 import AttractionsPage from "./pages/main/AttractionsPage";
 import PricingPage from "./pages/main/PricingPage";
 
@@ -80,6 +81,14 @@ function App() {
                 element={
                   <ErrorBoundary>
                     <SellingPointsPage />
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="main/why-visit"
+                element={
+                  <ErrorBoundary>
+                    <WhyVisitPage />
                   </ErrorBoundary>
                 }
               />

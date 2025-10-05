@@ -218,6 +218,102 @@ export const sellingPointsAPI = {
   },
 };
 
+// Why Visit API
+export const whyVisitAPI = {
+  getAll: async () => {
+    try {
+      const data = await apiFetch<any>("/why-visit");
+
+      // Handle the API response format: { data: [...], meta: {...} }
+      let result: API.WhyVisit[] = [];
+
+      if (Array.isArray(data)) {
+        // Direct array response
+        result = data;
+      } else if (data && typeof data === "object" && Array.isArray(data.data)) {
+        // Wrapped response with data property
+        result = data.data;
+      } else {
+        result = [];
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Error fetching why visit from /why-visit:", error);
+
+      // Try admin endpoint as fallback
+      try {
+        const adminData = await apiFetch<any>("/admin/why-visit");
+
+        let result: API.WhyVisit[] = [];
+        if (Array.isArray(adminData)) {
+          result = adminData;
+        } else if (
+          adminData &&
+          typeof adminData === "object" &&
+          Array.isArray(adminData.data)
+        ) {
+          result = adminData.data;
+        } else {
+          result = [];
+        }
+
+        return result;
+      } catch (adminError) {
+        console.error(
+          "Error fetching why visit from /admin/why-visit:",
+          adminError
+        );
+        throw error; // Throw original error
+      }
+    }
+  },
+  create: async (whyVisit: Partial<API.WhyVisit>) => {
+    return apiFetch<API.WhyVisit>("/admin/why-visit", {
+      method: "POST",
+      body: JSON.stringify(whyVisit),
+    });
+  },
+  update: async (id: number, whyVisit: Partial<API.WhyVisit>) => {
+    return apiFetch<API.WhyVisit>(`/admin/why-visit/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(whyVisit),
+    });
+  },
+  delete: async (id: number) => {
+    return apiFetch(`/admin/why-visit/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
+
+// Why Visit Content API
+export const whyVisitContentAPI = {
+  get: async () => {
+    const response = await apiFetch<any>("/why-visit-content");
+
+    // Handle potential wrapped response
+    if (response && typeof response === "object" && response.data) {
+      return response.data;
+    }
+
+    return response;
+  },
+  update: async (content: Partial<API.WhyVisitContent>) => {
+    const response = await apiFetch<any>("/admin/why-visit-content", {
+      method: "PUT",
+      body: JSON.stringify(content),
+    });
+
+    // Handle potential wrapped response
+    if (response && typeof response === "object" && response.data) {
+      return response.data;
+    }
+
+    return response;
+  },
+};
+
 // Attractions API
 export const attractionsAPI = {
   getAll: async () => {
@@ -247,15 +343,61 @@ export const attractionsAPI = {
 // Pricing API
 export const pricingAPI = {
   getAll: async () => {
-    const data = await apiFetch<API.Pricing[]>("/pricing");
-    // Ensure we always return an array, even if API returns unexpected data
-    return Array.isArray(data) ? data : [];
+    const response = await apiFetch<any>("/pricing");
+
+    // Handle different response formats
+    // If response has a 'data' property with pricing objects
+    if (response && response.data && typeof response.data === "object") {
+      // Convert object of pricing types to array, preserving the type key
+      const pricingsArray = Object.entries(response.data).map(
+        ([type, pricing]: [string, any]) => ({
+          ...pricing,
+          type, // Add the type from the object key
+        })
+      ) as API.Pricing[];
+      return pricingsArray;
+    }
+
+    // If it's already an array
+    if (Array.isArray(response)) {
+      return response as API.Pricing[];
+    }
+
+    // Fallback to empty array
+    return [];
   },
   update: async (pricing: Partial<API.Pricing>) => {
     return apiFetch<API.Pricing>("/admin/pricing", {
       method: "PUT",
       body: JSON.stringify(pricing),
     });
+  },
+};
+
+// General Pricing Content API
+export const generalPricingContentAPI = {
+  get: async () => {
+    const response = await apiFetch<any>("/pricing-content");
+
+    // Handle potential wrapped response
+    if (response && typeof response === "object" && response.data) {
+      return response.data;
+    }
+
+    return response;
+  },
+  update: async (content: Partial<API.GeneralPricingContent>) => {
+    const response = await apiFetch<any>("/admin/pricing-content", {
+      method: "PUT",
+      body: JSON.stringify(content),
+    });
+
+    // Handle potential wrapped response
+    if (response && typeof response === "object" && response.data) {
+      return response.data;
+    }
+
+    return response;
   },
 };
 

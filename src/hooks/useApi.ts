@@ -13,6 +13,8 @@ import {
   authAPI,
   carouselAPI,
   sellingPointsAPI,
+  whyVisitAPI,
+  whyVisitContentAPI,
   attractionsAPI,
   pricingAPI,
   profileAPI,
@@ -22,6 +24,7 @@ import {
   newsAPI,
   regulationsAPI,
   uploadAPI,
+  generalPricingContentAPI,
 } from "@/lib/api";
 import type * as API from "@/types/api";
 
@@ -45,6 +48,16 @@ export const queryKeys = {
     all: () => ["selling-points"] as const,
   },
 
+  // Why Visit
+  whyVisit: {
+    all: () => ["why-visit"] as const,
+  },
+
+  // Why Visit Content
+  whyVisitContent: {
+    get: () => ["why-visit-content"] as const,
+  },
+
   // Attractions
   attractions: {
     all: () => ["attractions"] as const,
@@ -53,6 +66,11 @@ export const queryKeys = {
   // Pricing
   pricing: {
     all: () => ["pricing"] as const,
+  },
+
+  // General Pricing Content
+  generalPricingContent: {
+    get: () => ["general-pricing-content"] as const,
   },
 
   // Profile
@@ -293,6 +311,126 @@ export function useDeleteSellingPoint() {
   });
 }
 
+// ==================== WHY VISIT HOOKS ====================
+
+export function useWhyVisit(
+  options?: Omit<UseQueryOptions<API.WhyVisit[]>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: queryKeys.whyVisit.all(),
+    queryFn: whyVisitAPI.getAll,
+    ...options,
+  });
+}
+
+export function useCreateWhyVisit() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (whyVisit: Partial<API.WhyVisit>) =>
+      whyVisitAPI.create(whyVisit),
+    onSuccess: (data) => {
+      // Get current why visit data from cache
+      const currentData = queryClient.getQueryData<API.WhyVisit[]>(
+        queryKeys.whyVisit.all()
+      );
+
+      // Update cache with new why visit
+      const newData = currentData ? [...currentData, data] : [data];
+      queryClient.setQueryData(queryKeys.whyVisit.all(), newData);
+
+      // Also invalidate to ensure fresh data on next fetch
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.whyVisit.all(),
+      });
+    },
+  });
+}
+
+export function useUpdateWhyVisit() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      whyVisit,
+    }: {
+      id: number;
+      whyVisit: Partial<API.WhyVisit>;
+    }) => whyVisitAPI.update(id, whyVisit),
+    onSuccess: (data) => {
+      // Get current why visit data from cache
+      const currentData = queryClient.getQueryData<API.WhyVisit[]>(
+        queryKeys.whyVisit.all()
+      );
+
+      if (currentData) {
+        // Update the specific why visit in the cache
+        const updatedData = currentData.map((item) =>
+          item.id === data.id ? data : item
+        );
+        queryClient.setQueryData(queryKeys.whyVisit.all(), updatedData);
+      }
+
+      // Also invalidate to ensure fresh data
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.whyVisit.all(),
+      });
+    },
+  });
+}
+
+export function useDeleteWhyVisit() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => whyVisitAPI.delete(id),
+    onSuccess: (_, variables) => {
+      // Get current why visit data from cache
+      const currentData = queryClient.getQueryData<API.WhyVisit[]>(
+        queryKeys.whyVisit.all()
+      );
+
+      if (currentData) {
+        // Remove the deleted why visit from cache
+        const updatedData = currentData.filter((item) => item.id !== variables);
+        queryClient.setQueryData(queryKeys.whyVisit.all(), updatedData);
+      }
+
+      // Also invalidate to ensure fresh data
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.whyVisit.all(),
+      });
+    },
+  });
+}
+
+// ==================== WHY VISIT CONTENT HOOKS ====================
+
+export function useWhyVisitContent(
+  options?: Omit<UseQueryOptions<API.WhyVisitContent>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: queryKeys.whyVisitContent.get(),
+    queryFn: whyVisitContentAPI.get,
+    ...options,
+  });
+}
+
+export function useUpdateWhyVisitContent() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (content: Partial<API.WhyVisitContent>) =>
+      whyVisitContentAPI.update(content),
+    onSuccess: (data) => {
+      // Update cache with new content
+      queryClient.setQueryData(queryKeys.whyVisitContent.get(), data);
+
+      // Also invalidate to ensure fresh data
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.whyVisitContent.get(),
+      });
+    },
+  });
+}
+
 // ==================== ATTRACTIONS HOOKS ====================
 
 export function useAttractions(
@@ -364,6 +502,37 @@ export function useUpdatePricing() {
   });
 }
 
+// ==================== GENERAL PRICING CONTENT HOOKS ====================
+
+export function useGeneralPricingContent(
+  options?: Omit<
+    UseQueryOptions<API.GeneralPricingContent>,
+    "queryKey" | "queryFn"
+  >
+) {
+  return useQuery({
+    queryKey: queryKeys.generalPricingContent.get(),
+    queryFn: generalPricingContentAPI.get,
+    ...options,
+  });
+}
+
+export function useUpdateGeneralPricingContent() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (content: Partial<API.GeneralPricingContent>) =>
+      generalPricingContentAPI.update(content),
+    onSuccess: (data) => {
+      // Update cache with new content
+      queryClient.setQueryData(queryKeys.generalPricingContent.get(), data);
+
+      // Also invalidate to ensure fresh data
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.generalPricingContent.get(),
+      });
+    },
+  });
+}
 // ==================== PROFILE HOOKS ====================
 
 export function useProfile(
