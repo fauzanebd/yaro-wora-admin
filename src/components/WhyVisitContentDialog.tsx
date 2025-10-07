@@ -22,11 +22,18 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Edit } from "lucide-react";
 
 const whyVisitContentSchema = z.object({
-  why_visit_section_title: z.string().min(1, "Section title is required"),
-  why_visit_section_title_id: z
+  why_visit_section_title_part_1: z
+    .string()
+    .min(1, "Section title is required"),
+  why_visit_section_title_part_2: z
+    .string()
+    .min(1, "Section title is required"),
+  why_visit_section_title_part_1_id: z
+    .string()
+    .min(1, "Section title (Indonesian) is required"),
+  why_visit_section_title_part_2_id: z
     .string()
     .min(1, "Section title (Indonesian) is required"),
   why_visit_section_description: z.string().optional(),
@@ -53,8 +60,14 @@ export default function WhyVisitContentDialog({
   const form = useForm<WhyVisitContentForm>({
     resolver: zodResolver(whyVisitContentSchema),
     defaultValues: {
-      why_visit_section_title: content?.why_visit_section_title ?? "",
-      why_visit_section_title_id: content?.why_visit_section_title_id ?? "",
+      why_visit_section_title_part_1:
+        content?.why_visit_section_title_part_1 ?? "",
+      why_visit_section_title_part_2:
+        content?.why_visit_section_title_part_2 ?? "",
+      why_visit_section_title_part_1_id:
+        content?.why_visit_section_title_part_1_id ?? "",
+      why_visit_section_title_part_2_id:
+        content?.why_visit_section_title_part_2_id ?? "",
       why_visit_section_description:
         content?.why_visit_section_description ?? "",
       why_visit_section_description_id:
@@ -66,8 +79,12 @@ export default function WhyVisitContentDialog({
   React.useEffect(() => {
     if (content) {
       form.reset({
-        why_visit_section_title: content.why_visit_section_title,
-        why_visit_section_title_id: content.why_visit_section_title_id,
+        why_visit_section_title_part_1: content.why_visit_section_title_part_1,
+        why_visit_section_title_part_2: content.why_visit_section_title_part_2,
+        why_visit_section_title_part_1_id:
+          content.why_visit_section_title_part_1_id,
+        why_visit_section_title_part_2_id:
+          content.why_visit_section_title_part_2_id,
         why_visit_section_description:
           content.why_visit_section_description || "",
         why_visit_section_description_id:
@@ -75,8 +92,10 @@ export default function WhyVisitContentDialog({
       });
     } else {
       form.reset({
-        why_visit_section_title: "",
-        why_visit_section_title_id: "",
+        why_visit_section_title_part_1: "",
+        why_visit_section_title_part_2: "",
+        why_visit_section_title_part_1_id: "",
+        why_visit_section_title_part_2_id: "",
         why_visit_section_description: "",
         why_visit_section_description_id: "",
       });
@@ -108,13 +127,13 @@ export default function WhyVisitContentDialog({
           >
             <FormField
               control={form.control}
-              name="why_visit_section_title"
+              name="why_visit_section_title_part_1"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Section Title (English)</FormLabel>
+                  <FormLabel>Section Title Part 1 (English)</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Enter section title in English"
+                      placeholder="Enter section title part 1 in English"
                       {...field}
                     />
                   </FormControl>
@@ -124,13 +143,45 @@ export default function WhyVisitContentDialog({
             />
             <FormField
               control={form.control}
-              name="why_visit_section_title_id"
+              name="why_visit_section_title_part_2"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Section Title (Indonesian)</FormLabel>
+                  <FormLabel>Section Title Part 2 (English)</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Masukkan judul section dalam Bahasa Indonesia"
+                      placeholder="Enter section title part 2 in English"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="why_visit_section_title_part_1_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Section Title Part 1 (Indonesian)</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Masukkan judul section part 1 dalam Bahasa Indonesia"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="why_visit_section_title_part_2_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Section Title Part 2 (Indonesian)</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Masukkan judul section part 2 dalam Bahasa Indonesia"
                       {...field}
                     />
                   </FormControl>

@@ -63,30 +63,41 @@ export interface WhyVisit {
 }
 
 export interface WhyVisitContent {
-  why_visit_section_title: string;
-  why_visit_section_title_id: string;
+  why_visit_section_title_part_1: string;
+  why_visit_section_title_part_2: string;
+  why_visit_section_title_part_1_id: string;
+  why_visit_section_title_part_2_id: string;
   why_visit_section_description: string;
   why_visit_section_description_id: string;
 }
 
 export interface Attraction {
-  id: string;
+  id: number;
   title: string;
-  short_description: string;
-  full_description: string;
+  title_id: string;
+  subtitle?: string;
+  subtitle_id?: string;
+  description?: string;
+  description_id?: string;
   image_url: string;
   highlights: string[];
-  duration: string;
-  difficulty: string;
-  price_range: string;
-  is_featured: boolean;
+  highlights_id: string[];
   sort_order: number;
-  created_at: string;
-  updated_at: string;
+  active: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface GeneralAttractionContent {
+  attraction_section_title_part_1: string;
+  attraction_section_title_part_2: string;
+  attraction_section_title_part_1_id: string;
+  attraction_section_title_part_2_id: string;
+  attraction_section_description: string;
+  attraction_section_description_id: string;
 }
 
 export interface Pricing {
-  id: number;
   type: string;
   title: string;
   title_id: string;
@@ -106,8 +117,10 @@ export interface Pricing {
 }
 
 export interface GeneralPricingContent {
-  general_pricing_section_title: string;
-  general_pricing_section_title_id: string;
+  general_pricing_section_title_part_1: string;
+  general_pricing_section_title_part_2: string;
+  general_pricing_section_title_part_1_id: string;
+  general_pricing_section_title_part_2_id: string;
   general_pricing_section_description: string;
   general_pricing_section_description_id: string;
 }

@@ -159,16 +159,34 @@ export default function WhyVisitPage() {
             <div className="space-y-4">
               <div>
                 <h3 className="font-medium text-sm text-muted-foreground mb-1">
-                  Title (English)
+                  Title Part 1 (English)
                 </h3>
-                <p className="text-lg">{contentData.why_visit_section_title}</p>
+                <p className="text-lg">
+                  {contentData.why_visit_section_title_part_1}
+                </p>
               </div>
               <div>
                 <h3 className="font-medium text-sm text-muted-foreground mb-1">
-                  Title (Indonesian)
+                  Title Part 2 (English)
                 </h3>
                 <p className="text-lg">
-                  {contentData.why_visit_section_title_id}
+                  {contentData.why_visit_section_title_part_2}
+                </p>
+              </div>
+              <div>
+                <h3 className="font-medium text-sm text-muted-foreground mb-1">
+                  Title Part 1 (Indonesian)
+                </h3>
+                <p className="text-lg">
+                  {contentData.why_visit_section_title_part_1_id}
+                </p>
+              </div>
+              <div>
+                <h3 className="font-medium text-sm text-muted-foreground mb-1">
+                  Title Part 2 (Indonesian)
+                </h3>
+                <p className="text-lg">
+                  {contentData.why_visit_section_title_part_2_id}
                 </p>
               </div>
               {contentData.why_visit_section_description && (

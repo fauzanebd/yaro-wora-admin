@@ -1,0 +1,13 @@
+export { default as authAPI } from "./auth";
+export { default as carouselAPI } from "./carousel";
+export { default as sellingPointsAPI } from "./selling-points";
+export * from "./why-visit";
+export * from "./attraction";
+export * from "./pricing";
+export { default as profileAPI } from "./profile";
+export { default as contactAPI } from "./contact";
+export { default as bookingAPI } from "./booking";
+export { default as galleryAPI } from "./gallery";
+export { default as newsAPI } from "./news";
+export { default as regulationsAPI } from "./regulations";
+export { default as uploadAPI } from "./upload";
