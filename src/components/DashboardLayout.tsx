@@ -147,7 +147,7 @@ function AppSidebar() {
                     {item.items ? (
                       <>
                         <CollapsibleTrigger asChild>
-                          <SidebarMenuButton>
+                          <SidebarMenuButton className="cursor-pointer">
                             <item.icon className="h-4 w-4" />
                             <span>{item.title}</span>
                             <ChevronDown className="ml-auto h-4 w-4" />
@@ -159,6 +159,7 @@ function AppSidebar() {
                               <SidebarMenuSubItem key={subItem.url}>
                                 <SidebarMenuSubButton
                                   onClick={() => navigate(subItem.url)}
+                                  className="cursor-pointer"
                                 >
                                   <span>{subItem.title}</span>
                                 </SidebarMenuSubButton>
@@ -170,6 +171,7 @@ function AppSidebar() {
                     ) : (
                       <SidebarMenuButton
                         onClick={() => item.url && navigate(item.url)}
+                        className="cursor-pointer"
                       >
                         <item.icon className="h-4 w-4" />
                         <span>{item.title}</span>
