@@ -313,7 +313,7 @@ export default function SellingPointDialog({
                   </FormItem>
                 )}
               />
-              <div className="grid grid-cols-2 gap-4">
+              {/* <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="pillar_color"
@@ -364,7 +364,7 @@ export default function SellingPointDialog({
                     </FormItem>
                   )}
                 />
-              </div>
+              </div> */}
               <FormField
                 control={form.control}
                 name="selling_point_order"
