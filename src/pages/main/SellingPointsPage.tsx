@@ -151,7 +151,6 @@ export default function SellingPointsPage() {
                   <TableHead>Image</TableHead>
                   <TableHead>Title</TableHead>
                   <TableHead>Description</TableHead>
-                  <TableHead>Colors</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -174,22 +173,6 @@ export default function SellingPointsPage() {
                       </TableCell>
                       <TableCell className="max-w-xs truncate">
                         {sellingPoint.description || "-"}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          <div
-                            className="w-6 h-6 rounded border"
-                            style={{
-                              backgroundColor: sellingPoint.pillar_color,
-                            }}
-                            title={`Pillar: ${sellingPoint.pillar_color}`}
-                          />
-                          <div
-                            className="w-6 h-6 rounded border"
-                            style={{ backgroundColor: sellingPoint.text_color }}
-                            title={`Text: ${sellingPoint.text_color}`}
-                          />
-                        </div>
                       </TableCell>
                       <TableCell>
                         <Badge
