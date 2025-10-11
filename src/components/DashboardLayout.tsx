@@ -63,8 +63,8 @@ const menuItems: MenuItem[] = [
       { title: "Carousel", url: "/main/carousel" },
       { title: "Selling Points", url: "/main/selling-points" },
       { title: "Why Visit", url: "/main/why-visit" },
-      { title: "Attractions", url: "/main/attractions" },
       { title: "Pricing", url: "/main/pricing" },
+      { title: "Attractions", url: "/main/attractions" },
     ],
   },
   {
