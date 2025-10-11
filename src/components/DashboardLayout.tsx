@@ -1,4 +1,4 @@
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import {
   Home,
   Image,
@@ -8,9 +8,9 @@ import {
   Newspaper,
   MessageSquare,
   BarChart3,
-  Users,
   ChevronDown,
   LogOut,
+  Landmark,
 } from "lucide-react";
 import {
   Sidebar,
@@ -77,21 +77,16 @@ const menuItems: MenuItem[] = [
     icon: MapPin,
     url: "/destinations",
   },
+
   {
     title: "Gallery",
     icon: Image,
-    items: [
-      { title: "Images", url: "/gallery/images" },
-      { title: "Categories", url: "/gallery/categories" },
-    ],
+    url: "/gallery",
   },
   {
     title: "Regulations",
     icon: FileText,
-    items: [
-      { title: "Regulations", url: "/regulations/list" },
-      { title: "Categories", url: "/regulations/categories" },
-    ],
+    url: "/regulations",
   },
   {
     title: "Facilities",
@@ -101,29 +96,28 @@ const menuItems: MenuItem[] = [
   {
     title: "News",
     icon: Newspaper,
-    items: [
-      { title: "Articles", url: "/news/articles" },
-      { title: "Categories", url: "/news/categories" },
-    ],
+    url: "/news",
+  },
+  {
+    title: "Heritage",
+    icon: Landmark,
+    url: "/heritage",
   },
   {
     title: "Contact",
     icon: MessageSquare,
-    items: [
-      { title: "Messages", url: "/contact/messages" },
-      { title: "Bookings", url: "/contact/bookings" },
-    ],
+    url: "/contact",
   },
   {
     title: "Analytics",
     icon: BarChart3,
     url: "/analytics",
   },
-  {
-    title: "Users",
-    icon: Users,
-    url: "/users",
-  },
+  // {
+  //   title: "Users",
+  //   icon: Users,
+  //   url: "/users",
+  // },
 ];
 
 function AppSidebar() {
@@ -133,12 +127,13 @@ function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader>
-        <div className="flex items-center gap-3 p-4">
-          <img src="/yarowora.svg" alt="Yaro Wora" className="h-10 w-10" />
-          <div>
-            <h2 className="text-lg font-bold">Yaro Wora</h2>
-            <p className="text-xs text-muted-foreground">Admin Dashboard</p>
-          </div>
+        <div className="flex flex-col items-center gap-2 p-4">
+          <img
+            src="/LogoYaroWora_PrimaryLogo_Horizontal@3x.png"
+            alt="Yaro Wora"
+            className="h-12"
+          />
+          <p className="text-xs text-muted-foreground">Admin Dashboard</p>
         </div>
       </SidebarHeader>
       <SidebarContent>
@@ -220,16 +215,65 @@ function AppSidebar() {
   );
 }
 
+// Utility function to generate breadcrumbs based on current route
+function generateBreadcrumbs(
+  pathname: string
+): Array<{ label: string; href?: string }> {
+  const pathSegments = pathname.split("/").filter(Boolean);
+  const breadcrumbs: Array<{ label: string; href?: string }> = [
+    { label: "Dashboard", href: "/" },
+  ];
+
+  if (pathSegments.length === 0) {
+    return breadcrumbs;
+  }
+
+  // Map route segments to readable labels
+  const routeLabels: Record<string, string> = {
+    main: "Main Page",
+    carousel: "Carousel",
+    "selling-points": "Selling Points",
+    "why-visit": "Why Visit",
+    attractions: "Attractions",
+    pricing: "Pricing",
+    profile: "Profile",
+    destinations: "Destinations",
+    gallery: "Gallery",
+    regulations: "Regulations",
+    facilities: "Facilities",
+    news: "News",
+    heritage: "Heritage",
+    contact: "Contact",
+    analytics: "Analytics",
+    users: "Users",
+  };
+
+  let currentPath = "";
+  pathSegments.forEach((segment, index) => {
+    currentPath += `/${segment}`;
+    const label =
+      routeLabels[segment] ||
+      segment.charAt(0).toUpperCase() + segment.slice(1);
+
+    // Don't add href for the last segment (current page)
+    const href = index === pathSegments.length - 1 ? undefined : currentPath;
+
+    breadcrumbs.push({ label, href });
+  });
+
+  return breadcrumbs;
+}
+
 export default function DashboardLayout() {
+  const location = useLocation();
+  const breadcrumbs = generateBreadcrumbs(location.pathname);
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
         <AppSidebar />
         <SidebarInset className="flex-1">
-          <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-6">
-            <SidebarTrigger />
-            <h1 className="text-lg font-semibold">Dashboard</h1>
-          </header>
+          <Header breadcrumbs={breadcrumbs} />
           <main className="flex-1 p-6">
             <Outlet />
           </main>
@@ -240,7 +284,6 @@ export default function DashboardLayout() {
 }
 
 interface HeaderProps {
-  onToggleSidebar?: () => void;
   breadcrumbs?: Array<{
     label: string;
     href?: string;

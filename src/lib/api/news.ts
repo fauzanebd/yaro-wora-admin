@@ -1,55 +1,173 @@
 import type * as API from "@/types/api";
 import { apiFetch } from "./base";
 
-// News API
-export default {
-  // Categories
-  getAllCategories: async () => {
-    const data = await apiFetch<API.NewsCategory[]>("/news/categories");
-    // Ensure we always return an array, even if API returns unexpected data
-    return Array.isArray(data) ? data : [];
+// Response interfaces matching backend
+interface NewsGetResponse {
+  data: API.NewsArticleSummary[];
+  meta: API.NewsMeta;
+}
+
+interface NewsCategoriesResponse {
+  data: API.NewsCategory[];
+  meta: API.NewsCategoriesMeta;
+}
+
+interface NewsAuthorsResponse {
+  data: API.NewsAuthor[];
+  meta: API.NewsAuthorsMeta;
+}
+
+interface NewsArticleResponse {
+  data: API.NewsArticle;
+}
+
+interface NewsAuthorResponse {
+  data: API.NewsAuthor;
+}
+
+interface NewsContentResponse {
+  data: API.NewsPageContent;
+}
+
+// News Content API
+export const newsContentAPI = {
+  get: async (): Promise<API.NewsPageContent> => {
+    const response = await apiFetch<NewsContentResponse>("/news/content");
+    return response.data;
   },
-  createCategory: async (category: Partial<API.NewsCategory>) => {
-    return apiFetch<API.NewsCategory>("/admin/news/categories", {
-      method: "POST",
-      body: JSON.stringify(category),
-    });
+  update: async (
+    payload: API.NewsPageContent
+  ): Promise<API.NewsPageContent> => {
+    const response = await apiFetch<NewsContentResponse>(
+      "/admin/news/content",
+      {
+        method: "PUT",
+        body: JSON.stringify(payload),
+      }
+    );
+    return response.data;
   },
-  updateCategory: async (id: number, category: Partial<API.NewsCategory>) => {
-    return apiFetch<API.NewsCategory>(`/admin/news/categories/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(category),
-    });
+};
+
+// News Categories API
+export const newsCategoriesAPI = {
+  getAll: async (): Promise<API.NewsCategory[]> => {
+    const response = await apiFetch<NewsCategoriesResponse>("/news/categories");
+    return response.data;
   },
-  deleteCategory: async (id: number) => {
-    return apiFetch(`/admin/news/categories/${id}`, {
+  create: async (
+    payload: Partial<API.NewsCategory>
+  ): Promise<API.NewsCategory> => {
+    const response = await apiFetch<API.NewsCategory>(
+      "/admin/news/categories",
+      {
+        method: "POST",
+        body: JSON.stringify(payload),
+      }
+    );
+    return response;
+  },
+  update: async (
+    id: number,
+    payload: Partial<API.NewsCategory>
+  ): Promise<API.NewsCategory> => {
+    const response = await apiFetch<API.NewsCategory>(
+      `/admin/news/categories/${id}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(payload),
+      }
+    );
+    return response;
+  },
+  delete: async (id: number): Promise<void> => {
+    await apiFetch(`/admin/news/categories/${id}`, {
       method: "DELETE",
     });
   },
+};
 
-  // Articles
-  getAllArticles: async () => {
-    const data = await apiFetch<API.NewsArticle[]>("/news");
-    // Ensure we always return an array, even if API returns unexpected data
-    return Array.isArray(data) ? data : [];
+// News Authors API
+export const newsAuthorsAPI = {
+  getAll: async (): Promise<API.NewsAuthor[]> => {
+    const response = await apiFetch<NewsAuthorsResponse>("/news/authors");
+    return response.data;
   },
-  getArticle: async (id: number) => {
-    return apiFetch<API.NewsArticle>(`/news/${id}`);
+  getById: async (id: number): Promise<API.NewsAuthor> => {
+    const response = await apiFetch<NewsAuthorResponse>(`/news/authors/${id}`);
+    return response.data;
   },
-  createArticle: async (article: Partial<API.NewsArticle>) => {
-    return apiFetch<API.NewsArticle>("/admin/news", {
+  create: async (payload: Partial<API.NewsAuthor>): Promise<API.NewsAuthor> => {
+    const response = await apiFetch<API.NewsAuthor>("/admin/news/authors", {
       method: "POST",
-      body: JSON.stringify(article),
+      body: JSON.stringify(payload),
+    });
+    return response;
+  },
+  update: async (
+    id: number,
+    payload: Partial<API.NewsAuthor>
+  ): Promise<API.NewsAuthor> => {
+    const response = await apiFetch<API.NewsAuthor>(
+      `/admin/news/authors/${id}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(payload),
+      }
+    );
+    return response;
+  },
+  delete: async (id: number): Promise<void> => {
+    await apiFetch(`/admin/news/authors/${id}`, {
+      method: "DELETE",
     });
   },
-  updateArticle: async (id: number, article: Partial<API.NewsArticle>) => {
-    return apiFetch<API.NewsArticle>(`/admin/news/${id}`, {
+};
+
+// News Articles API
+export const newsAPI = {
+  getAll: async (
+    params: { page?: number; per_page?: number } = {}
+  ): Promise<{
+    data: API.NewsArticleSummary[];
+    meta: API.NewsMeta;
+  }> => {
+    const searchParams = new URLSearchParams();
+    if (params.page) searchParams.set("page", params.page.toString());
+    if (params.per_page)
+      searchParams.set("per_page", params.per_page.toString());
+
+    const url = `/news${
+      searchParams.toString() ? `?${searchParams.toString()}` : ""
+    }`;
+    const response = await apiFetch<NewsGetResponse>(url);
+    return response;
+  },
+  getById: async (id: number): Promise<API.NewsArticle> => {
+    const response = await apiFetch<NewsArticleResponse>(`/news/${id}`);
+    return response.data;
+  },
+  create: async (
+    payload: Partial<API.NewsArticle>
+  ): Promise<API.NewsArticle> => {
+    const response = await apiFetch<API.NewsArticle>("/admin/news", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+    return response;
+  },
+  update: async (
+    id: number,
+    payload: Partial<API.NewsArticle>
+  ): Promise<API.NewsArticle> => {
+    const response = await apiFetch<API.NewsArticle>(`/admin/news/${id}`, {
       method: "PUT",
-      body: JSON.stringify(article),
+      body: JSON.stringify(payload),
     });
+    return response;
   },
-  deleteArticle: async (id: number) => {
-    return apiFetch(`/admin/news/${id}`, {
+  delete: async (id: number): Promise<void> => {
+    await apiFetch(`/admin/news/${id}`, {
       method: "DELETE",
     });
   },

@@ -1,19 +1,4 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import {
-  useGalleryImages,
-  useGalleryCategories,
-  useCreateGalleryImage,
-  useUpdateGalleryImage,
-  useDeleteGalleryImage,
-  useUploadFile,
-} from "@/hooks/useApi";
-import type { GalleryImage, GalleryCategory } from "@/types/api";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import React from "react";
 import {
   Card,
   CardContent,
@@ -21,22 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  FormDescription,
-} from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -45,433 +15,473 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Edit, Plus, Trash2 } from "lucide-react";
+import GalleryContentDialog from "@/components/GalleryContentDialog";
+import GalleryCategoryDialog from "@/components/GalleryCategoryDialog";
+import GalleryDialog from "@/components/GalleryDialog";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Upload, Pencil, Trash2 } from "lucide-react";
-
-const imageSchema = z.object({
-  category_id: z.number().min(1, "Category is required"),
-  title: z.string().min(1, "Title is required"),
-  description: z.string().optional(),
-  image_url: z.string().url("Must be a valid URL"),
-  thumbnail_url: z.string().url("Must be a valid URL"),
-  alt_text: z.string().optional(),
-  sort_order: z.number().int().min(0),
-});
-
-type ImageForm = z.infer<typeof imageSchema>;
+  useGalleryContent,
+  useUpdateGalleryContent,
+  useGalleryCategories,
+  useCreateGalleryCategory,
+  useUpdateGalleryCategory,
+  useDeleteGalleryCategory,
+  useGalleryImages,
+  useGalleryImageDetail,
+  useCreateGalleryImage,
+  useUpdateGalleryImage,
+  useDeleteGalleryImage,
+} from "@/hooks/useApi";
+import type { GalleryCategory } from "@/types/api";
+import type { GalleryForm } from "@/types/gallery-form";
+import type { GalleryCategoryForm } from "@/types/gallery-category-form";
 
 export default function GalleryImagesPage() {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingImage, setEditingImage] = useState<GalleryImage | null>(null);
+  // Dialog states
+  const [isContentDialogOpen, setIsContentDialogOpen] = React.useState(false);
+  const [isCategoryDialogOpen, setIsCategoryDialogOpen] = React.useState(false);
+  const [editingCategory, setEditingCategory] =
+    React.useState<GalleryCategory | null>(null);
 
-  // Query hooks
+  // Queries
   const {
-    data: imagesData,
-    isLoading: isLoadingImages,
-    error: imagesError,
-  } = useGalleryImages();
+    data: content,
+    isLoading: contentLoading,
+    error: contentError,
+  } = useGalleryContent();
   const {
-    data: categoriesData,
-    isLoading: isLoadingCategories,
+    data: categories,
+    isLoading: categoriesLoading,
     error: categoriesError,
   } = useGalleryCategories();
 
-  // Ensure data is always arrays
-  const images = Array.isArray(imagesData) ? imagesData : [];
-  const categories = Array.isArray(categoriesData) ? categoriesData : [];
+  // Mutations
+  const updateContent = useUpdateGalleryContent();
+  const createCategory = useCreateGalleryCategory();
+  const updateCategory = useUpdateGalleryCategory();
+  const deleteCategory = useDeleteGalleryCategory();
 
-  // Mutation hooks
+  // Gallery Images
+  const [page, setPage] = React.useState(1);
+  const [perPage] = React.useState(10);
+  const {
+    data: imagesResp,
+    isLoading: imagesLoading,
+    error: imagesError,
+  } = useGalleryImages({ page, per_page: perPage });
+  const images = imagesResp?.data || [];
+  const pagination = imagesResp?.meta?.pagination;
   const createImage = useCreateGalleryImage();
   const updateImage = useUpdateGalleryImage();
   const deleteImage = useDeleteGalleryImage();
-  const uploadFile = useUploadFile();
+  const [isImageDialogOpen, setIsImageDialogOpen] = React.useState(false);
+  const [editingImageId, setEditingImageId] = React.useState<number | null>(
+    null
+  );
 
-  const isLoading = isLoadingImages || isLoadingCategories;
-
-  const form = useForm<ImageForm>({
-    resolver: zodResolver(imageSchema),
-    defaultValues: {
-      category_id: 0,
-      title: "",
-      description: "",
-      image_url: "",
-      thumbnail_url: "",
-      alt_text: "",
-      sort_order: 0,
-    },
+  // Fetch full image when editing
+  const { data: editingImage } = useGalleryImageDetail(editingImageId || 0, {
+    enabled: !!editingImageId,
   });
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const handleContentSubmit = async (data: any) => {
     try {
-      const result = await uploadFile.mutateAsync({ file, folder: "gallery" });
-      form.setValue("image_url", result.file_url);
-      form.setValue("thumbnail_url", result.thumbnail_url || result.file_url);
-    } catch (error) {
-      console.error("Upload failed:", error);
-      alert("Failed to upload image");
+      await updateContent.mutateAsync(data);
+      setIsContentDialogOpen(false);
+    } catch (e) {
+      console.error(e);
+      alert("Failed to save gallery content");
     }
   };
 
-  const onSubmit = async (data: ImageForm) => {
+  const openCreateCategory = () => {
+    setEditingCategory(null);
+    setIsCategoryDialogOpen(true);
+  };
+
+  const openEditCategory = (cat: GalleryCategory) => {
+    setEditingCategory(cat);
+    setIsCategoryDialogOpen(true);
+  };
+
+  const handleCategorySubmit = async (data: GalleryCategoryForm) => {
     try {
-      if (editingImage) {
-        await updateImage.mutateAsync({ id: editingImage.id, image: data });
+      if (editingCategory && editingCategory.id) {
+        await updateCategory.mutateAsync({
+          id: editingCategory.id,
+          payload: data,
+        });
+      } else {
+        await createCategory.mutateAsync(data);
+      }
+      setIsCategoryDialogOpen(false);
+      setEditingCategory(null);
+    } catch (e) {
+      console.error("Failed to save category", e);
+      alert("Failed to save category");
+    }
+  };
+
+  const handleDeleteCategory = async (id?: number) => {
+    if (!id) return;
+    if (!confirm("Are you sure you want to delete this category?")) return;
+    try {
+      await deleteCategory.mutateAsync(id);
+    } catch (e) {
+      console.error("Failed to delete category", e);
+      alert("Failed to delete category");
+    }
+  };
+
+  const openCreateImage = () => {
+    setEditingImageId(null);
+    setIsImageDialogOpen(true);
+  };
+
+  const openEditImage = (img: { id: number }) => {
+    setEditingImageId(img.id);
+    setIsImageDialogOpen(true);
+  };
+
+  const handleImageSubmit = async (data: GalleryForm) => {
+    try {
+      if (editingImageId) {
+        await updateImage.mutateAsync({
+          id: editingImageId,
+          payload: data,
+        });
       } else {
         await createImage.mutateAsync(data);
       }
-      setIsDialogOpen(false);
-      form.reset();
-      setEditingImage(null);
-    } catch (error) {
-      console.error("Failed to save image:", error);
+      setIsImageDialogOpen(false);
+      setEditingImageId(null);
+    } catch (e) {
+      console.error("Failed to save image", e);
       alert("Failed to save image");
     }
   };
 
-  const handleEdit = (image: GalleryImage) => {
-    setEditingImage(image);
-    form.reset({
-      category_id: image.category_id,
-      title: image.title,
-      description: image.description || "",
-      image_url: image.image_url,
-      thumbnail_url: image.thumbnail_url,
-      alt_text: image.alt_text || "",
-      sort_order: image.sort_order,
-    });
-    setIsDialogOpen(true);
-  };
-
-  const handleDelete = async (id: number) => {
+  const handleDeleteImage = async (id: number) => {
     if (!confirm("Are you sure you want to delete this image?")) return;
     try {
       await deleteImage.mutateAsync(id);
-    } catch (error) {
-      console.error("Failed to delete image:", error);
+    } catch (e) {
+      console.error("Failed to delete image", e);
       alert("Failed to delete image");
     }
-  };
-
-  const handleDialogClose = () => {
-    setIsDialogOpen(false);
-    setEditingImage(null);
-    form.reset();
-  };
-
-  const getCategoryName = (categoryId: number) => {
-    const category = categories.find((c) => c.id === categoryId);
-    return category?.name || "Unknown";
   };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Gallery Images</h1>
-          <p className="text-muted-foreground">Manage gallery photos</p>
+          <h1 className="text-3xl font-bold">Gallery</h1>
+          <p className="text-muted-foreground">
+            Manage gallery page content and images
+          </p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button
-              onClick={() => {
-                setEditingImage(null);
-                form.reset();
-              }}
-            >
-              <Upload className="h-4 w-4 mr-2" />
-              Upload Images
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>
-                {editingImage ? "Edit" : "Upload"} Gallery Image
-              </DialogTitle>
-              <DialogDescription>
-                {editingImage ? "Update" : "Add a new"} image to the gallery
-              </DialogDescription>
-            </DialogHeader>
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-4"
-              >
-                <FormField
-                  control={form.control}
-                  name="category_id"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Category</FormLabel>
-                      <Select
-                        onValueChange={(value) =>
-                          field.onChange(parseInt(value))
-                        }
-                        value={field.value?.toString()}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a category" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {categories.map((category) => (
-                            <SelectItem
-                              key={category.id}
-                              value={category.id.toString()}
-                            >
-                              {category.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Title</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter image title" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description (Optional)</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Brief description of the image"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="space-y-2">
-                  <FormLabel>Image</FormLabel>
-                  <div className="flex gap-2">
-                    <label className="cursor-pointer">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        disabled={uploadFile.isPending}
-                        asChild
-                      >
-                        <span>
-                          <Upload className="h-4 w-4 mr-2" />
-                          {uploadFile.isPending
-                            ? "Uploading..."
-                            : "Upload Image"}
-                        </span>
-                      </Button>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileUpload}
-                        className="hidden"
-                      />
-                    </label>
-                  </div>
-                  {form.watch("image_url") && (
-                    <img
-                      src={form.watch("image_url")}
-                      alt="Preview"
-                      className="w-full h-48 object-cover rounded-md"
-                    />
-                  )}
-                </div>
-                <FormField
-                  control={form.control}
-                  name="image_url"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Image URL</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Or paste image URL" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="thumbnail_url"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Thumbnail URL</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Thumbnail URL (optional)"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Will use main image if not provided
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="alt_text"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Alt Text (Optional)</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Image description for accessibility"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="sort_order"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Sort Order</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          placeholder="0"
-                          {...field}
-                          onChange={(e) =>
-                            field.onChange(parseInt(e.target.value))
-                          }
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Lower numbers appear first
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="flex justify-end gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleDialogClose}
-                  >
-                    Cancel
-                  </Button>
-                  <Button type="submit">
-                    {editingImage ? "Update" : "Upload"}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </DialogContent>
-        </Dialog>
       </div>
 
+      {/* Page Content Overview */}
       <Card>
         <CardHeader>
-          <CardTitle>Gallery Images</CardTitle>
-          <CardDescription>All images in the gallery</CardDescription>
+          <div className="flex justify-between items-center">
+            <div>
+              <CardTitle>Page Content</CardTitle>
+              <CardDescription>
+                Manage header content for the gallery page
+              </CardDescription>
+            </div>
+            <GalleryContentDialog
+              open={isContentDialogOpen}
+              onOpenChange={setIsContentDialogOpen}
+              content={content || null}
+              onSubmit={handleContentSubmit}
+              trigger={
+                <Button variant="outline">
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit Content
+                </Button>
+              }
+            />
+          </div>
         </CardHeader>
         <CardContent>
-          {isLoading ? (
+          {contentLoading ? (
             <div className="text-center py-8">Loading...</div>
-          ) : imagesError || categoriesError ? (
+          ) : contentError ? (
             <div className="text-center py-8">
               <p className="text-destructive font-medium mb-2">
-                Failed to load gallery data
+                Failed to load content
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {contentError instanceof Error
+                  ? contentError.message
+                  : "Unknown error"}
+              </p>
+            </div>
+          ) : content ? (
+            <div className="space-y-4">
+              {content.hero_image_url && (
+                <img
+                  src={content.hero_image_url}
+                  alt="Hero"
+                  className="w-full h-48 object-cover rounded-md"
+                />
+              )}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <h3 className="font-medium text-sm text-muted-foreground mb-1">
+                    Title (EN)
+                  </h3>
+                  <p className="text-lg">{content.title}</p>
+                </div>
+                <div>
+                  <h3 className="font-medium text-sm text-muted-foreground mb-1">
+                    Title (ID)
+                  </h3>
+                  <p className="text-lg">{content.title_id}</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <h3 className="font-medium text-sm text-muted-foreground mb-1">
+                    Subtitle (EN)
+                  </h3>
+                  <p className="text-sm">{content.subtitle}</p>
+                </div>
+                <div>
+                  <h3 className="font-medium text-sm text-muted-foreground mb-1">
+                    Subtitle (ID)
+                  </h3>
+                  <p className="text-sm">{content.subtitle_id}</p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-4 text-muted-foreground">
+              No content found. Click "Edit Content" to add content.
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Gallery Images Management */}
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <div>
+              <CardTitle>Gallery Images</CardTitle>
+              <CardDescription>Manage gallery images</CardDescription>
+            </div>
+            <GalleryDialog
+              open={isImageDialogOpen}
+              onOpenChange={setIsImageDialogOpen}
+              editingImage={editingImage || null}
+              onSubmit={handleImageSubmit}
+              trigger={
+                <Button onClick={openCreateImage}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Image
+                </Button>
+              }
+            />
+          </div>
+        </CardHeader>
+        <CardContent>
+          {imagesLoading ? (
+            <div className="text-center py-8">Loading...</div>
+          ) : imagesError ? (
+            <div className="text-center py-8">
+              <p className="text-destructive font-medium mb-2">
+                Failed to load images
               </p>
               <p className="text-sm text-muted-foreground">
                 {imagesError instanceof Error
                   ? imagesError.message
-                  : categoriesError instanceof Error
-                  ? categoriesError.message
-                  : "Unknown error occurred"}
+                  : "Unknown error"}
               </p>
             </div>
-          ) : images.length === 0 ? (
+          ) : !images || images.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
-              No images found. Upload your first image to get started.
+              No images found. Click "Add Image" to create one.
             </div>
           ) : (
-            <div className="space-y-4">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Order</TableHead>
-                    <TableHead>Thumbnail</TableHead>
-                    <TableHead>Title</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Created At</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Thumbnail</TableHead>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Date Uploaded</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {images.map((img) => (
+                  <TableRow key={img.id}>
+                    <TableCell>
+                      <img
+                        src={img.thumbnail_url || img.image_url}
+                        alt={img.title}
+                        className="h-12 w-20 object-cover rounded"
+                      />
+                    </TableCell>
+                    <TableCell className="font-medium">{img.title}</TableCell>
+                    <TableCell>
+                      {img.gallery_category ? (
+                        <div className="flex items-center gap-2">
+                          {img.gallery_category.name}
+                        </div>
+                      ) : (
+                        <span className="text-muted-foreground">
+                          No category
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {new Date(img.date_uploaded).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => openEditImage(img)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleDeleteImage(img.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
                   </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {images
-                    .sort((a, b) => a.sort_order - b.sort_order)
-                    .map((image) => (
-                      <TableRow key={image.id}>
-                        <TableCell>{image.sort_order}</TableCell>
-                        <TableCell>
-                          <img
-                            src={image.thumbnail_url}
-                            alt={image.alt_text}
-                            className="h-12 w-20 object-cover rounded"
-                          />
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          {image.title}
-                        </TableCell>
-                        <TableCell>
-                          {getCategoryName(image.category_id)}
-                        </TableCell>
-                        <TableCell>
-                          {new Date(image.created_at).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleEdit(image)}
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="destructive"
-                              onClick={() => handleDelete(image.id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+          <div className="flex items-center justify-between mt-4">
+            <div className="text-sm text-muted-foreground">
+              Page {pagination?.current_page ?? page} of{" "}
+              {pagination?.total_pages ?? 1}
             </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                disabled={!(pagination?.has_previous ?? page > 1)}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+              >
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                disabled={!(pagination?.has_next ?? false)}
+                onClick={() => setPage((p) => p + 1)}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Categories Management */}
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <div>
+              <CardTitle>Gallery Categories</CardTitle>
+              <CardDescription>
+                Manage categories for gallery images
+              </CardDescription>
+            </div>
+            <GalleryCategoryDialog
+              open={isCategoryDialogOpen}
+              onOpenChange={setIsCategoryDialogOpen}
+              category={editingCategory}
+              onSubmit={handleCategorySubmit}
+              title={editingCategory ? "Edit Category" : "Add Category"}
+              trigger={
+                <Button onClick={openCreateCategory}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Category
+                </Button>
+              }
+            />
+          </div>
+        </CardHeader>
+        <CardContent>
+          {categoriesLoading ? (
+            <div className="text-center py-8">Loading...</div>
+          ) : categoriesError ? (
+            <div className="text-center py-8">
+              <p className="text-destructive font-medium mb-2">
+                Failed to load categories
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {categoriesError instanceof Error
+                  ? categoriesError.message
+                  : "Unknown error"}
+              </p>
+            </div>
+          ) : !categories || categories.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              No categories found. Click "Add Category" to create your first
+              category.
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Name (ID)</TableHead>
+                  <TableHead>Description</TableHead>
+                  <TableHead>Count</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {categories.map((cat) => (
+                  <TableRow key={cat.id || cat.name}>
+                    <TableCell className="font-medium">{cat.name}</TableCell>
+                    <TableCell>{cat.name_id}</TableCell>
+                    <TableCell>
+                      {cat.description ? (
+                        <div className="max-w-xs truncate">
+                          {cat.description}
+                        </div>
+                      ) : (
+                        "-"
+                      )}
+                    </TableCell>
+                    <TableCell>{cat.count || 0}</TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => openEditCategory(cat)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleDeleteCategory(cat.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           )}
         </CardContent>
       </Card>

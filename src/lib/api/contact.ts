@@ -1,25 +1,52 @@
 import type * as API from "@/types/api";
 import { apiFetch } from "./base";
 
-// Contact API
+// Contact Info API
+interface ContactInfoGetResponse {
+  data: API.ContactInfo;
+}
+export const contactInfoAPI = {
+  get: async () => {
+    const response = await apiFetch<ContactInfoGetResponse>("/contact-info");
+    return response.data;
+  },
+  update: async (data: API.ContactInfo) => {
+    const response = await apiFetch<ContactInfoGetResponse>(
+      "/admin/contact-info",
+      {
+        method: "PUT",
+        body: JSON.stringify(data),
+      }
+    );
+    return response.data;
+  },
+};
+
+// Contact Content API
+interface ContactContentGetResponse {
+  data: API.ContactContent;
+}
+export const contactContentAPI = {
+  get: async () => {
+    const response = await apiFetch<ContactContentGetResponse>(
+      "/contact-content"
+    );
+    return response.data;
+  },
+  update: async (data: API.ContactContent) => {
+    const response = await apiFetch<ContactContentGetResponse>(
+      "/admin/contact-content",
+      {
+        method: "PUT",
+        body: JSON.stringify(data),
+      }
+    );
+    return response.data;
+  },
+};
+
+// Backward compatibility - keep the default export
 export default {
-  getAll: async (params?: {
-    status?: string;
-    limit?: number;
-    offset?: number;
-  }) => {
-    const queryString = params
-      ? `?${new URLSearchParams(params as any).toString()}`
-      : "";
-    return apiFetch(`/admin/contacts${queryString}`);
-  },
-  getById: async (id: number) => {
-    return apiFetch(`/admin/contacts/${id}`);
-  },
-  updateStatus: async (id: number, status: string, admin_notes?: string) => {
-    return apiFetch<API.ContactSubmission>(`/admin/contacts/${id}`, {
-      method: "PUT",
-      body: JSON.stringify({ status, admin_notes }),
-    });
-  },
+  contactInfoAPI,
+  contactContentAPI,
 };

@@ -19,28 +19,25 @@ import ProfilePage from "./pages/ProfilePage";
 // Destinations
 import DestinationsPage from "./pages/DestinationsPage";
 
+// Heritage
+import HeritagePage from "./pages/HeritagePage";
+
 // Gallery
 import GalleryImagesPage from "./pages/gallery/GalleryImagesPage";
-import GalleryCategoriesPage from "./pages/gallery/GalleryCategoriesPage";
 
 // Regulations
 import RegulationsPage from "./pages/regulations/RegulationsPage";
-import RegulationCategoriesPage from "./pages/regulations/RegulationCategoriesPage";
 
 // Facilities
 import FacilitiesPage from "./pages/FacilitiesPage";
 
-// News
-import NewsArticlesPage from "./pages/news/NewsArticlesPage";
-import NewsCategoriesPage from "./pages/news/NewsCategoriesPage";
-
 // Contact
-import ContactMessagesPage from "./pages/contact/ContactMessagesPage";
-import ContactBookingsPage from "./pages/contact/ContactBookingsPage";
+import ContactPage from "./pages/ContactPage";
 
 // Analytics & Users
 import AnalyticsPage from "./pages/AnalyticsPage";
 import UsersPage from "./pages/UsersPage";
+import NewsPage from "./pages/news/NewsPage";
 
 function App() {
   return (
@@ -129,38 +126,32 @@ function App() {
                 }
               />
 
+              {/* Heritage */}
+              <Route
+                path="heritage"
+                element={
+                  <ErrorBoundary>
+                    <HeritagePage />
+                  </ErrorBoundary>
+                }
+              />
+
               {/* Gallery */}
               <Route
-                path="gallery/images"
+                path="gallery"
                 element={
                   <ErrorBoundary>
                     <GalleryImagesPage />
                   </ErrorBoundary>
                 }
               />
-              <Route
-                path="gallery/categories"
-                element={
-                  <ErrorBoundary>
-                    <GalleryCategoriesPage />
-                  </ErrorBoundary>
-                }
-              />
 
               {/* Regulations */}
               <Route
-                path="regulations/list"
+                path="regulations/"
                 element={
                   <ErrorBoundary>
                     <RegulationsPage />
-                  </ErrorBoundary>
-                }
-              />
-              <Route
-                path="regulations/categories"
-                element={
-                  <ErrorBoundary>
-                    <RegulationCategoriesPage />
                   </ErrorBoundary>
                 }
               />
@@ -177,36 +168,20 @@ function App() {
 
               {/* News */}
               <Route
-                path="news/articles"
+                path="news"
                 element={
                   <ErrorBoundary>
-                    <NewsArticlesPage />
-                  </ErrorBoundary>
-                }
-              />
-              <Route
-                path="news/categories"
-                element={
-                  <ErrorBoundary>
-                    <NewsCategoriesPage />
+                    <NewsPage />
                   </ErrorBoundary>
                 }
               />
 
               {/* Contact */}
               <Route
-                path="contact/messages"
+                path="contact"
                 element={
                   <ErrorBoundary>
-                    <ContactMessagesPage />
-                  </ErrorBoundary>
-                }
-              />
-              <Route
-                path="contact/bookings"
-                element={
-                  <ErrorBoundary>
-                    <ContactBookingsPage />
+                    <ContactPage />
                   </ErrorBoundary>
                 }
               />

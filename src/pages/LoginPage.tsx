@@ -64,11 +64,11 @@ export default function LoginPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
-            <div className="w-20 h-20 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-3xl font-bold text-primary-foreground">
-                YW
-              </span>
-            </div>
+            <img
+              src="/LogoYaroWora_PrimaryLogo_Horizontal@3x.png"
+              alt="Yaro Wora Logo"
+              className="h-16 w-auto"
+            />
           </div>
           <CardTitle className="text-2xl font-bold">
             Yaro Wora Dashboard

@@ -92,7 +92,7 @@ export default function NewsCategoriesPage() {
       if (editingCategory) {
         await updateCategory.mutateAsync({
           id: editingCategory.id,
-          category: data,
+          payload: data,
         });
       } else {
         await createCategory.mutateAsync(data);
@@ -110,7 +110,6 @@ export default function NewsCategoriesPage() {
     setEditingCategory(category);
     form.reset({
       name: category.name,
-      slug: category.slug,
     });
     setIsDialogOpen(true);
   };
@@ -268,10 +267,7 @@ export default function NewsCategoriesPage() {
                       {category.name}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="secondary">{category.slug}</Badge>
-                    </TableCell>
-                    <TableCell>
-                      {new Date(category.created_at).toLocaleDateString()}
+                      <Badge variant="secondary">{category.name_id}</Badge>
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">

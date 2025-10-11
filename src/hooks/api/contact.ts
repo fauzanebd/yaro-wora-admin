@@ -1,50 +1,51 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { contactAPI } from "@/lib/api";
-import { queryKeys } from "./base";
+import { contactInfoAPI, contactContentAPI } from "@/lib/api/contact";
+import type { ContactInfo, ContactContent } from "@/types/api";
 
-export function useContacts(
-  params?: { status?: string; limit?: number; offset?: number },
+// Contact Info hooks
+export function useContactInfo(
   options?: Omit<
-    import("@tanstack/react-query").UseQueryOptions<any>,
+    import("@tanstack/react-query").UseQueryOptions<ContactInfo>,
     "queryKey" | "queryFn"
   >
 ) {
   return useQuery({
-    queryKey: queryKeys.contact.all(params),
-    queryFn: () => contactAPI.getAll(params),
+    queryKey: ["contact-info"],
+    queryFn: () => contactInfoAPI.get(),
     ...options,
   });
 }
 
-export function useContact(
-  id: number,
-  options?: Omit<
-    import("@tanstack/react-query").UseQueryOptions<any>,
-    "queryKey" | "queryFn"
-  >
-) {
-  return useQuery({
-    queryKey: queryKeys.contact.detail(id),
-    queryFn: () => contactAPI.getById(id),
-    enabled: !!id,
-    ...options,
-  });
-}
-
-export function useUpdateContactStatus() {
+export function useUpdateContactInfo() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({
-      id,
-      status,
-      admin_notes,
-    }: {
-      id: number;
-      status: string;
-      admin_notes?: string;
-    }) => contactAPI.updateStatus(id, status, admin_notes),
+    mutationFn: (data: ContactInfo) => contactInfoAPI.update(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["contacts"] });
+      queryClient.invalidateQueries({ queryKey: ["contact-info"] });
+    },
+  });
+}
+
+// Contact Content hooks
+export function useContactContent(
+  options?: Omit<
+    import("@tanstack/react-query").UseQueryOptions<ContactContent>,
+    "queryKey" | "queryFn"
+  >
+) {
+  return useQuery({
+    queryKey: ["contact-content"],
+    queryFn: () => contactContentAPI.get(),
+    ...options,
+  });
+}
+
+export function useUpdateContactContent() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: ContactContent) => contactContentAPI.update(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["contact-content"] });
     },
   });
 }

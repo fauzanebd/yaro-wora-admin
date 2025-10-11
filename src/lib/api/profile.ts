@@ -1,14 +1,26 @@
 import type * as API from "@/types/api";
 import { apiFetch } from "./base";
+
 // Profile API
-export default {
+interface ProfileGetResponse {
+  data: API.ProfilePageContent;
+}
+
+export const profileAPI = {
   get: async () => {
-    return apiFetch<API.Profile>("/profile");
+    const response = await apiFetch<ProfileGetResponse>("/profile");
+    return response.data;
   },
-  update: async (profile: Partial<API.Profile>) => {
-    return apiFetch<API.Profile>("/admin/profile", {
+  update: async (data: API.ProfilePageContent) => {
+    const response = await apiFetch<ProfileGetResponse>("/admin/profile", {
       method: "PUT",
-      body: JSON.stringify(profile),
+      body: JSON.stringify(data),
     });
+    return response.data;
   },
+};
+
+// Backward compatibility - keep the default export
+export default {
+  profileAPI,
 };

@@ -2,8 +2,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { whyVisitAPI } from "@/lib/api";
 import { queryKeys } from "./base";
 import type { WhyVisit, UseQueryOptions } from "./base";
-
 export function useWhyVisit(
+
   options?: Omit<UseQueryOptions<WhyVisit[]>, "queryKey" | "queryFn">
 ) {
   return useQuery({
