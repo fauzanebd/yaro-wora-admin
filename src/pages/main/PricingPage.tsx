@@ -66,9 +66,6 @@ const pricingSchema = z.object({
     .url("Must be a valid URL")
     .optional()
     .or(z.literal("")),
-  color: z.string().optional(),
-  start_gradient_color: z.string().optional(),
-  end_gradient_color: z.string().optional(),
 });
 
 type PricingForm = z.infer<typeof pricingSchema>;
@@ -109,9 +106,6 @@ export default function PricingPage() {
       description: "",
       image_url: "",
       thumbnail_url: "",
-      color: "#000000",
-      start_gradient_color: "#000000",
-      end_gradient_color: "#FFFFFF",
     },
   });
 
@@ -129,9 +123,6 @@ export default function PricingPage() {
       description: "",
       image_url: "",
       thumbnail_url: "",
-      color: "#000000",
-      start_gradient_color: "#000000",
-      end_gradient_color: "#FFFFFF",
     },
   });
 
@@ -149,9 +140,6 @@ export default function PricingPage() {
       description: "",
       image_url: "",
       thumbnail_url: "",
-      color: "#000000",
-      start_gradient_color: "#000000",
-      end_gradient_color: "#FFFFFF",
     },
   });
 
@@ -185,9 +173,6 @@ export default function PricingPage() {
           description: pricing.description || "",
           image_url: pricing.image_url || "",
           thumbnail_url: pricing.thumbnail_url || "",
-          color: pricing.color || "#000000",
-          start_gradient_color: pricing.start_gradient_color || "#000000",
-          end_gradient_color: pricing.end_gradient_color || "#FFFFFF",
         };
         console.log("Form data prepared:", formData);
 
@@ -446,7 +431,7 @@ export default function PricingPage() {
                 </FormItem>
               )}
             />
-            <div className="grid grid-cols-3 gap-4">
+            {/* <div className="grid grid-cols-3 gap-4">
               <FormField
                 control={form.control}
                 name="color"
@@ -510,7 +495,7 @@ export default function PricingPage() {
                   </FormItem>
                 )}
               />
-            </div>
+            </div> */}
             <Button type="submit">Update Pricing</Button>
           </form>
         </Form>
