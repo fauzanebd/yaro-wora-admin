@@ -547,7 +547,7 @@ export default function AnalyticsPage() {
               </div>
             </div>
 
-            <div className="text-center pt-6 border-t">
+            {/* <div className="text-center pt-6 border-t">
               <p className="text-sm text-muted-foreground mb-4">
                 Ready to unlock the full potential of your tourism platform?
               </p>
@@ -558,7 +558,7 @@ export default function AnalyticsPage() {
                 <span>Contact: fauzanebd@gmail.com</span>
                 <TrendingUp className="h-4 w-4" />
               </a>
-            </div>
+            </div> */}
           </div>
         </CardContent>
       </Card>
