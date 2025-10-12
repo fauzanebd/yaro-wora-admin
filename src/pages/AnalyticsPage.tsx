@@ -455,27 +455,92 @@ export default function AnalyticsPage() {
         <CardHeader>
           <div className="flex items-center gap-2">
             <BarChart3 className="h-6 w-6" />
-            <CardTitle>Additional Analytics</CardTitle>
+            <CardTitle>Advanced Analytics</CardTitle>
           </div>
           <CardDescription>
-            Enhanced analytics features coming soon
+            Possible features in higher tier plans
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">
-            Additional analytics features to help you understand your website's
-            performance and user behavior.
-          </p>
-          <div className="mt-4 p-4 bg-muted rounded-lg">
-            <h3 className="font-medium mb-2">Planned Features:</h3>
-            <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-              <li>Time-based visitor trends (hourly, daily, weekly charts)</li>
-              <li>Popular attractions and destinations analytics</li>
-              <li>Booking conversion rates and funnel analysis</li>
-              <li>Contact form submission analytics</li>
-              <li>Referrer and traffic source analysis</li>
-              <li>User journey and session analytics</li>
-            </ul>
+          <div className="space-y-6">
+            <div className="text-center py-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-full text-sm font-medium text-blue-700 mb-4">
+                <TrendingUp className="h-4 w-4" />
+                Higher Tier Features
+              </div>
+              <h3 className="text-xl font-semibold mb-2">
+                Transform Your Tourism Business
+              </h3>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Take your destination management to the next level with advanced
+                analytics, multi-user collaboration, and comprehensive booking
+                management tools designed specifically for tourism
+                professionals.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Advanced Analytics */}
+              <div className="p-6 border rounded-lg hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 bg-blue-100 rounded-lg">
+                    <BarChart3 className="h-5 w-5 text-blue-600" />
+                  </div>
+                  <h4 className="font-semibold">Advanced Analytics</h4>
+                </div>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li>• Real-time visitor behavior tracking</li>
+                  <li>• Conversion funnel analysis</li>
+                  <li>• Revenue attribution modeling</li>
+                  <li>• Custom dashboard creation</li>
+                  <li>• Predictive analytics insights</li>
+                </ul>
+              </div>
+
+              {/* Multi-User Management */}
+              <div className="p-6 border rounded-lg hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 bg-green-100 rounded-lg">
+                    <Users className="h-5 w-5 text-green-600" />
+                  </div>
+                  <h4 className="font-semibold">Multi-User Access</h4>
+                </div>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li>• Role-based permissions system</li>
+                  <li>• Team collaboration tools</li>
+                  <li>• Admin, manager, and staff roles</li>
+                  <li>• Activity tracking and audit logs</li>
+                  <li>• Secure user authentication</li>
+                </ul>
+              </div>
+
+              {/* Booking Management */}
+              <div className="p-6 border rounded-lg hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 bg-purple-100 rounded-lg">
+                    <Globe className="h-5 w-5 text-purple-600" />
+                  </div>
+                  <h4 className="font-semibold">Booking Management</h4>
+                </div>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li>• Facility and destination bookings</li>
+                  <li>• Automated scheduling system</li>
+                  <li>• Payment processing integration</li>
+                  <li>• Customer communication tools</li>
+                  <li>• Revenue optimization insights</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="text-center pt-6 border-t">
+              <p className="text-sm text-muted-foreground mb-4">
+                Ready to unlock the full potential of your tourism platform?
+              </p>
+              <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all cursor-pointer">
+                <span>Explore Higher Tiers</span>
+                <TrendingUp className="h-4 w-4" />
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
