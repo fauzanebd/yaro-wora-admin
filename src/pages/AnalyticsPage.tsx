@@ -206,7 +206,7 @@ export default function AnalyticsPage() {
               </div>
 
               {/* Higher Tier Benefits */}
-              <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg">
+              {/* <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg">
                 <div className="flex items-center gap-2 mb-2">
                   <TrendingUp className="h-4 w-4 text-blue-600" />
                   <span className="text-sm font-medium text-blue-700">
@@ -219,7 +219,7 @@ export default function AnalyticsPage() {
                     <span>Expanded storage capacity</span>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           ) : (
             <div className="text-center py-8">
