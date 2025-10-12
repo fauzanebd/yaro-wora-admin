@@ -473,9 +473,7 @@ export default function AnalyticsPage() {
             <BarChart3 className="h-6 w-6" />
             <CardTitle>Advanced Analytics</CardTitle>
           </div>
-          <CardDescription>
-            Possible features in higher tier plans
-          </CardDescription>
+          <CardDescription>Features in higher tier plans</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
@@ -553,10 +551,13 @@ export default function AnalyticsPage() {
               <p className="text-sm text-muted-foreground mb-4">
                 Ready to unlock the full potential of your tourism platform?
               </p>
-              <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all cursor-pointer">
-                <span>Explore Higher Tiers</span>
+              <a
+                href="mailto:fauzanebd@gmail.com?subject=Higher Tier Features Inquiry&body=Hi, I'm interested in learning more about the higher tier features for the tourism platform."
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all cursor-pointer"
+              >
+                <span>Contact: fauzanebd@gmail.com</span>
                 <TrendingUp className="h-4 w-4" />
-              </div>
+              </a>
             </div>
           </div>
         </CardContent>
