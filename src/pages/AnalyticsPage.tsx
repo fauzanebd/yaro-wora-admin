@@ -525,7 +525,6 @@ export default function AnalyticsPage() {
                   <li>• Admin, manager, and staff roles</li>
                   <li>• Support for more concurrent users</li>
                   <li>• Activity tracking and audit logs</li>
-                  <li>• Secure user authentication</li>
                 </ul>
               </div>
 
