@@ -163,8 +163,9 @@ export default function SellingPointsPage() {
                       <TableCell>{sellingPoint.selling_point_order}</TableCell>
                       <TableCell>
                         <img
-                          src={sellingPoint.image_url}
+                          src={sellingPoint.thumbnail_url}
                           alt={sellingPoint.title}
+                          aria-label={sellingPoint.title}
                           className="h-12 w-20 object-cover rounded"
                         />
                       </TableCell>

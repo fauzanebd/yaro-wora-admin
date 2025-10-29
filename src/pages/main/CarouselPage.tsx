@@ -160,7 +160,8 @@ export default function CarouselPage() {
                       <TableCell>{carousel.carousel_order}</TableCell>
                       <TableCell>
                         <img
-                          src={carousel.image_url}
+                          src={carousel.thumbnail_url}
+                          aria-label={carousel.alt_text}
                           alt={carousel.alt_text}
                           className="h-12 w-20 object-cover rounded"
                         />
