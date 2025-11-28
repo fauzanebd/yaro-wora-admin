@@ -237,7 +237,7 @@ export default function SellingPointDialog({
                         <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>Supported formats: JPG, PNG</p>
+                        <p>Supported formats: JPG, PNG, WEBP</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -257,7 +257,7 @@ export default function SellingPointDialog({
                     </Button>
                     <input
                       type="file"
-                      accept="image/jpeg,image/jpg,image/png"
+                      accept="image/jpeg,image/jpg,image/png,image/webp"
                       onChange={handleFileUpload}
                       className="hidden"
                     />

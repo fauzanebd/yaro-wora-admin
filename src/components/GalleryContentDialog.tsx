@@ -206,7 +206,7 @@ export default function GalleryContentDialog({
                       </Button>
                       <input
                         type="file"
-                        accept="image/jpeg,image/jpg,image/png"
+                        accept="image/jpeg,image/jpg,image/png,image/webp"
                         onChange={handleHeaderImageUpload}
                         className="hidden"
                       />

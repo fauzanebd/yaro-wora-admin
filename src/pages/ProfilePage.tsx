@@ -323,7 +323,7 @@ export default function ProfilePage() {
                             <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>Supported formats: JPG, PNG</p>
+                            <p>Supported formats: JPG, PNG, WEBP</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
@@ -345,7 +345,7 @@ export default function ProfilePage() {
                         </Button>
                         <input
                           type="file"
-                          accept="image/jpeg,image/jpg,image/png"
+                          accept="image/jpeg,image/jpg,image/png,image/webp"
                           onChange={handleHeaderImageUpload}
                           className="hidden"
                         />
@@ -514,7 +514,7 @@ export default function ProfilePage() {
                             <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>Supported formats: JPG, PNG</p>
+                            <p>Supported formats: JPG, PNG, WEBP</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
@@ -536,7 +536,7 @@ export default function ProfilePage() {
                         </Button>
                         <input
                           type="file"
-                          accept="image/jpeg,image/jpg,image/png"
+                          accept="image/jpeg,image/jpg,image/png,image/webp"
                           onChange={handleBriefImageUpload}
                           className="hidden"
                         />
